@@ -50,7 +50,10 @@ self.addEventListener('fetch', (event) => {
         } catch (e) {
           console.warn('Share target error:', e);
         }
-        return Response.redirect(self.location.origin + self.location.pathname, 303);
+        return new Response(
+          '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=./"></head><body>Loading...</body></html>',
+          { headers: { 'Content-Type': 'text/html' } }
+        );
       })()
     );
     return;
