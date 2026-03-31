@@ -235,7 +235,12 @@ const I18N = {
     hoursAgo: '小時前',
     daysAgo: '天前',
     arrowSkip: '左右方向鍵：跳轉進度',
-    helpNote: '手機可點擊右下角 🔖 按鈕新增標記，使用 << / >> 按鈕跳轉進度'
+    helpNote: '手機可點擊右下角 🔖 按鈕新增標記，使用 << / >> 按鈕跳轉進度',
+    fileNotCached: '檔案未快取，請先開啟一次此音檔',
+    pin: '釘選',
+    unpin: '取消釘選',
+    pinned: '已釘選',
+    unpinned: '已取消釘選'
   },
   'en': {
     appName: 'SpeedUp',
@@ -473,7 +478,12 @@ const I18N = {
     hoursAgo: 'hours ago',
     daysAgo: 'days ago',
     arrowSkip: 'Arrow keys: Skip progress',
-    helpNote: 'Mobile: tap the 🔖 button to add bookmarks, use << / >> buttons to skip'
+    helpNote: 'Mobile: tap the 🔖 button to add bookmarks, use << / >> buttons to skip',
+    fileNotCached: 'File not cached. Open the file first.',
+    pin: 'Pin',
+    unpin: 'Unpin',
+    pinned: 'Pinned',
+    unpinned: 'Unpinned'
   }
 };
 

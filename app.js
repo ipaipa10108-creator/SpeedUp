@@ -529,17 +529,25 @@
           '<div class="history-name">' + escapeHtml(h.name) + '</div>' +
           '<div class="history-detail">' + dur + ' &middot; ' + ago + '</div>' +
         '</div>' +
+        '<button class="history-pin" data-name="' + escapeHtml(h.name) + '" title="' + (t('pin') || '釘選') + '">&#x1F4CC;</button>' +
         '<button class="history-delete" data-index="' + i + '" title="' + t('delete') + '">&#x2715;</button>' +
         '</div>';
     }).join('');
 
     els.historyList.querySelectorAll('.history-item').forEach((el) => {
       el.addEventListener('click', (e) => {
-        if (e.target.closest('.history-delete')) return;
+        if (e.target.closest('.history-delete') || e.target.closest('.history-pin')) return;
         const idx = parseInt(el.dataset.index);
         const item = history[idx];
         if (!item) return;
         loadFromCache(item.name);
+      });
+    });
+
+    els.historyList.querySelectorAll('.history-pin').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePin(el.dataset.name);
       });
     });
 
@@ -665,7 +673,7 @@
 
   function openAudioDB() {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open('speedup-audio', 1);
+      const request = indexedDB.open('speedup-audio', 2);
       request.onupgradeneeded = () => {
         const db = request.result;
         if (!db.objectStoreNames.contains('audio-files')) {
@@ -682,18 +690,28 @@
       const db = await openAudioDB();
       const tx = db.transaction('audio-files', 'readwrite');
       const store = tx.objectStore('audio-files');
+      const existing = await new Promise((res, rej) => {
+        const r = store.get(file.name);
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      });
       const arrayBuffer = await file.arrayBuffer();
       store.put({
         name: file.name,
         type: file.type,
         data: Array.from(new Uint8Array(arrayBuffer)),
+        pinned: existing ? existing.pinned : false,
         cachedAt: Date.now()
       });
       await tx.complete;
-      const all = await store.getAll();
-      if (all.length > 5) {
-        all.sort((a, b) => a.cachedAt - b.cachedAt);
-        const toRemove = all.slice(0, all.length - 5);
+      const all = await new Promise((res, rej) => {
+        const r = store.getAll();
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      });
+      const unpinned = all.filter((f) => !f.pinned).sort((a, b) => a.cachedAt - b.cachedAt);
+      if (unpinned.length > 5) {
+        const toRemove = unpinned.slice(0, unpinned.length - 5);
         const tx2 = db.transaction('audio-files', 'readwrite');
         toRemove.forEach((item) => tx2.objectStore('audio-files').delete(item.name));
         await tx2.complete;
@@ -720,26 +738,38 @@
           showToast(cached.name, 'success');
           return;
         }
-        loadFromPicker(fileName);
+        showToast(t('fileNotCached') || '檔案未快取，請先開啟一次此音檔', 'info');
       };
 
       request.onerror = () => {
-        loadFromPicker(fileName);
+        showToast(t('fileNotCached') || '檔案未快取，請先開啟一次此音檔', 'info');
       };
     } catch (e) {
-      loadFromPicker(fileName);
+      showToast(t('fileNotCached') || '檔案未快取，請先開啟一次此音檔', 'info');
     }
   }
 
-  function loadFromPicker(fileName) {
-    els.fileInput.click();
-    els.fileInput.onchange = (ev) => {
-      const file = ev.target.files[0];
-      if (file) {
-        loadFile(file);
-      }
-      els.fileInput.onchange = null;
-    };
+  async function togglePin(fileName) {
+    try {
+      const db = await openAudioDB();
+      const tx = db.transaction('audio-files', 'readwrite');
+      const store = tx.objectStore('audio-files');
+      const request = store.get(fileName);
+
+      request.onsuccess = () => {
+        const cached = request.result;
+        if (cached) {
+          cached.pinned = !cached.pinned;
+          store.put(cached);
+          tx.oncomplete = () => {
+            renderHistory();
+            showToast(cached.pinned ? (t('pinned') || '已釘選') : (t('unpinned') || '已取消釘選'), 'success');
+          };
+        }
+      };
+    } catch (e) {
+      console.warn('Failed to toggle pin:', e);
+    }
   }
 
   async function checkSharedFile() {

@@ -511,6 +511,30 @@ body {
   background: rgba(233, 69, 96, 0.1);
 }
 
+.history-pin {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.history-pin:hover {
+  color: var(--warning);
+  background: rgba(255, 165, 2, 0.1);
+}
+
+.history-pin.pinned {
+  color: var(--warning);
+}
+
 .controls {
   display: flex;
   justify-content: center;
