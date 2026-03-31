@@ -60,7 +60,9 @@
     skipDuration: $('#skip-duration'),
     skipBackLabel: $('#skip-back-label'),
     skipForwardLabel: $('#skip-forward-label'),
-    floatingMarkBtn: $('#floating-mark-btn')
+    floatingMarkBtn: $('#floating-mark-btn'),
+    historyList: $('#history-list'),
+    clearHistoryBtn: $('#clear-history-btn')
   };
 
   function init() {
@@ -68,6 +70,7 @@
     setLang(getCurrentLang());
     setupEventListeners();
     loadBookmarks();
+    renderHistory();
     checkSharedFile();
   }
 
@@ -154,6 +157,8 @@
 
     els.floatingMarkBtn.addEventListener('click', addBookmark);
 
+    els.clearHistoryBtn.addEventListener('click', clearAllHistory);
+
     audio.addEventListener('loadedmetadata', onMetadataLoaded);
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('ended', onPlaybackEnded);
@@ -198,6 +203,7 @@
     els.floatingMarkBtn.hidden = false;
 
     loadBookmarksForFile(file.name);
+    addHistoryEntry(file.name, audio.duration || 0);
   }
 
   function onMetadataLoaded() {
@@ -486,6 +492,96 @@
       renderBookmarks();
       showToast(t('deleted') || '已刪除', 'success');
     }
+  }
+
+  function addHistoryEntry(fileName, duration) {
+    const history = JSON.parse(localStorage.getItem('speedup-history') || '[]');
+    const existing = history.findIndex((h) => h.name === fileName);
+    if (existing !== -1) {
+      history.splice(existing, 1);
+    }
+    history.unshift({
+      name: fileName,
+      duration: duration,
+      lastOpened: Date.now()
+    });
+    if (history.length > 20) {
+      history.pop();
+    }
+    localStorage.setItem('speedup-history', JSON.stringify(history));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    if (!els.historyList) return;
+    const history = JSON.parse(localStorage.getItem('speedup-history') || '[]');
+    if (history.length === 0) {
+      els.historyList.innerHTML = '<div class="history-empty" data-i18n="noHistory">' + t('noHistory') + '</div>';
+      return;
+    }
+    els.historyList.innerHTML = history.map((h, i) => {
+      const ago = timeAgo(h.lastOpened);
+      const dur = h.duration ? formatTime(h.duration) : '';
+      return '<div class="history-item" data-index="' + i + '">' +
+        '<span class="history-icon">&#x1F3B5;</span>' +
+        '<div class="history-info">' +
+          '<div class="history-name">' + escapeHtml(h.name) + '</div>' +
+          '<div class="history-detail">' + dur + ' &middot; ' + ago + '</div>' +
+        '</div>' +
+        '<button class="history-delete" data-index="' + i + '" title="' + t('delete') + '">&#x2715;</button>' +
+        '</div>';
+    }).join('');
+
+    els.historyList.querySelectorAll('.history-item').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.history-delete')) return;
+        const idx = parseInt(el.dataset.index);
+        const item = history[idx];
+        if (!item) return;
+        els.fileInput.click();
+        els.fileInput.onchange = (ev) => {
+          const file = ev.target.files[0];
+          if (file && file.name === item.name) {
+            loadFile(file);
+          } else if (file) {
+            addHistoryEntry(file.name, 0);
+            loadFile(file);
+          }
+          els.fileInput.onchange = null;
+        };
+      });
+    });
+
+    els.historyList.querySelectorAll('.history-delete').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(el.dataset.index);
+        const h = JSON.parse(localStorage.getItem('speedup-history') || '[]');
+        h.splice(idx, 1);
+        localStorage.setItem('speedup-history', JSON.stringify(h));
+        renderHistory();
+      });
+    });
+  }
+
+  function clearAllHistory() {
+    if (confirm(t('confirmClearHistory') || '確定要清除所有歷史記錄嗎？')) {
+      localStorage.setItem('speedup-history', '[]');
+      renderHistory();
+      showToast(t('deleted') || '已清除', 'success');
+    }
+  }
+
+  function timeAgo(timestamp) {
+    const diff = Date.now() - timestamp;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return t('justNow') || '剛剛';
+    if (mins < 60) return mins + ' ' + (t('minsAgo') || '分鐘前');
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return hours + ' ' + (t('hoursAgo') || '小時前');
+    const days = Math.floor(hours / 24);
+    if (days < 7) return days + ' ' + (t('daysAgo') || '天前');
+    return new Date(timestamp).toLocaleDateString();
   }
 
   function getSkipDuration() {

@@ -127,6 +127,16 @@
         </div>
       </section>
 
+      <section class="history-section" id="history-section">
+        <div class="history-header">
+          <h2 data-i18n="history">歷史記錄</h2>
+          <button id="clear-history-btn" class="btn-bm-action btn-bm-delete" data-i18n-title="clearHistory" title="清除全部">&#x1F5D1;</button>
+        </div>
+        <div class="history-list" id="history-list">
+          <div class="history-empty" data-i18n="noHistory">尚無歷史記錄</div>
+        </div>
+      </section>
+
       <section class="convert-section" id="convert-section" hidden>
         <details class="convert-details">
           <summary data-i18n="convert">格式轉換</summary>
@@ -167,10 +177,12 @@
       <div class="modal-body">
         <ul class="shortcut-list">
           <li><kbd>Space</kbd> <span data-i18n="spacePlayPause">空白鍵：播放/暫停</span></li>
-          <li><kbd>&larr;</kbd><kbd>&rarr;</kbd> <span data-i18n="arrowSpeed">左右方向鍵：調整速度</span></li>
+          <li><kbd>&larr;</kbd><kbd>&rarr;</kbd> <span data-i18n="arrowSkip">左右方向鍵：跳轉進度</span></li>
+          <li><kbd>&uarr;</kbd><kbd>&darr;</kbd> <span data-i18n="arrowSpeed">上下方向鍵：調整速度</span></li>
           <li><kbd>M</kbd> <span data-i18n="mBookmark">M 鍵：新增標記</span></li>
           <li><kbd>1</kbd>-<kbd>9</kbd> <span data-i18n="numberJump">數字鍵 1-9：跳至對應標記</span></li>
         </ul>
+        <p class="help-note" data-i18n="helpNote">手機可點擊右下角 &#x1F516; 按鈕新增標記，使用 &lt;&lt; / &gt;&gt; 按鈕跳轉進度</p>
       </div>
     </div>
   </div>

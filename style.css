@@ -419,6 +419,98 @@ body {
   transform: scale(0.9);
 }
 
+.history-section {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.history-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.history-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 16px;
+  font-size: 0.9rem;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.history-item:active {
+  background: var(--border);
+}
+
+.history-icon {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-name {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-detail {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.history-delete {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.history-delete:hover {
+  color: var(--accent);
+  background: rgba(233, 69, 96, 0.1);
+}
+
 .controls {
   display: flex;
   justify-content: center;
@@ -951,6 +1043,16 @@ body {
   align-items: center;
   gap: 12px;
   font-size: 0.9rem;
+}
+
+.help-note {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 kbd {

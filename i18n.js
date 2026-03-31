@@ -225,7 +225,17 @@ const I18N = {
     confirmDeleteAll: '確定要刪除所有標記點嗎？',
     deleted: '已刪除',
     skipBack: '後退',
-    skipForward: '前進'
+    skipForward: '前進',
+    history: '歷史記錄',
+    noHistory: '尚無歷史記錄',
+    clearHistory: '清除歷史',
+    confirmClearHistory: '確定要清除所有歷史記錄嗎？',
+    justNow: '剛剛',
+    minsAgo: '分鐘前',
+    hoursAgo: '小時前',
+    daysAgo: '天前',
+    arrowSkip: '左右方向鍵：跳轉進度',
+    helpNote: '手機可點擊右下角 🔖 按鈕新增標記，使用 << / >> 按鈕跳轉進度'
   },
   'en': {
     appName: 'SpeedUp',
@@ -453,7 +463,17 @@ const I18N = {
     confirmDeleteAll: 'Delete all bookmarks?',
     deleted: 'Deleted',
     skipBack: 'Skip back',
-    skipForward: 'Skip forward'
+    skipForward: 'Skip forward',
+    history: 'History',
+    noHistory: 'No history yet',
+    clearHistory: 'Clear history',
+    confirmClearHistory: 'Clear all history?',
+    justNow: 'Just now',
+    minsAgo: 'mins ago',
+    hoursAgo: 'hours ago',
+    daysAgo: 'days ago',
+    arrowSkip: 'Arrow keys: Skip progress',
+    helpNote: 'Mobile: tap the 🔖 button to add bookmarks, use << / >> buttons to skip'
   }
 };
 
