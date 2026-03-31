@@ -54,7 +54,13 @@
     inputMin: $('#input-min'),
     inputSec: $('#input-sec'),
     inputMs: $('#input-ms'),
-    timeGoBtn: $('#time-go-btn')
+    timeGoBtn: $('#time-go-btn'),
+    skipBackBtn: $('#skip-back-btn'),
+    skipForwardBtn: $('#skip-forward-btn'),
+    skipDuration: $('#skip-duration'),
+    skipBackLabel: $('#skip-back-label'),
+    skipForwardLabel: $('#skip-forward-label'),
+    floatingMarkBtn: $('#floating-mark-btn')
   };
 
   function init() {
@@ -142,6 +148,12 @@
     els.inputSec.addEventListener('keydown', (e) => { if (e.key === 'Enter') seekToTimeInput(); });
     els.inputMs.addEventListener('keydown', (e) => { if (e.key === 'Enter') seekToTimeInput(); });
 
+    els.skipBackBtn.addEventListener('click', () => { skipTime(-getSkipDuration()); });
+    els.skipForwardBtn.addEventListener('click', () => { skipTime(getSkipDuration()); });
+    els.skipDuration.addEventListener('change', updateSkipLabels);
+
+    els.floatingMarkBtn.addEventListener('click', addBookmark);
+
     audio.addEventListener('loadedmetadata', onMetadataLoaded);
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('ended', onPlaybackEnded);
@@ -183,6 +195,7 @@
     els.speedSection.hidden = false;
     els.bookmarkSection.hidden = false;
     els.convertSection.hidden = false;
+    els.floatingMarkBtn.hidden = false;
 
     loadBookmarksForFile(file.name);
   }
@@ -475,6 +488,21 @@
     }
   }
 
+  function getSkipDuration() {
+    return parseInt(els.skipDuration.value) || 5;
+  }
+
+  function updateSkipLabels() {
+    const dur = getSkipDuration();
+    els.skipBackLabel.textContent = '-' + dur + 's';
+    els.skipForwardLabel.textContent = '+' + dur + 's';
+  }
+
+  function skipTime(seconds) {
+    if (!audio.duration) return;
+    audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + seconds));
+  }
+
   function handleKeyboard(e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -485,9 +513,17 @@
         break;
       case 'ArrowRight':
         e.preventDefault();
-        setSpeed(Math.min(4, audio.playbackRate + 0.1));
+        skipTime(getSkipDuration());
         break;
       case 'ArrowLeft':
+        e.preventDefault();
+        skipTime(-getSkipDuration());
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSpeed(Math.min(4, audio.playbackRate + 0.1));
+        break;
+      case 'ArrowDown':
         e.preventDefault();
         setSpeed(Math.max(0.25, audio.playbackRate - 0.1));
         break;

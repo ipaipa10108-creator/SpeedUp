@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
@@ -27,8 +27,8 @@
 
     <main class="main">
       <section class="file-info" id="file-info">
-        <div class="file-name" id="file-name" data-i18n="noFile">撠?豢??單?</div>
-        <div class="file-status" id="file-status" data-i18n="ready">撠梁?</div>
+        <div class="file-name" id="file-name" data-i18n="noFile">尚未選擇音檔</div>
+        <div class="file-status" id="file-status" data-i18n="ready">就緒</div>
       </section>
 
       <section class="drop-zone" id="drop-zone">
@@ -37,11 +37,11 @@
             <input type="checkbox" id="drop-zone-toggle" checked>
             <span class="toggle-slider"></span>
           </label>
-          <span class="toggle-label" data-i18n="dropZone">????/span>
+          <span class="toggle-label" data-i18n="dropZone">拖放區域</span>
         </div>
         <div class="drop-zone-content" id="drop-zone-content">
-          <div class="drop-message" data-i18n="dropFile">??單??單迨嚗?暺?銝???豢?瑼?</div>
-          <div class="supported-formats" data-i18n="supportedFormats">?舀?澆?嚗AC, MP3, MP4, WAV, OGG, FLAC, WEBM, M4A</div>
+          <div class="drop-message" data-i18n="dropFile">拖放音檔至此，或點擊上方按鈕選擇檔案</div>
+          <div class="supported-formats" data-i18n="supportedFormats">支援格式：AAC, MP3, MP4, WAV, OGG, FLAC, WEBM, M4A</div>
         </div>
       </section>
 
@@ -56,15 +56,30 @@
           <div class="progress-thumb" id="progress-thumb"></div>
         </div>
         <div class="time-input-row">
-          <span class="time-input-label" data-i18n="seekTo">頝喳</span>
+          <span class="time-input-label" data-i18n="seekTo">跳到</span>
           <div class="time-input-group">
-            <input type="number" id="input-min" class="time-input" min="0" max="999" value="0" placeholder="??>
+            <input type="number" id="input-min" class="time-input" min="0" max="999" value="0" placeholder="分">
             <span class="time-input-sep">:</span>
-            <input type="number" id="input-sec" class="time-input" min="0" max="59" value="0" placeholder="蝘?>
+            <input type="number" id="input-sec" class="time-input" min="0" max="59" value="0" placeholder="秒">
             <span class="time-input-sep">.</span>
             <input type="number" id="input-ms" class="time-input" min="0" max="9" value="0" placeholder="0.1s">
-            <button id="time-go-btn" class="btn-time-go" data-i18n="go">??</button>
+            <button id="time-go-btn" class="btn-time-go" data-i18n="go">前往</button>
           </div>
+        </div>
+        <div class="skip-controls">
+          <button id="skip-back-btn" class="btn-skip" data-i18n-title="skipBack" title="後退">&#x23EA;</button>
+          <span class="skip-label" id="skip-back-label">-5s</span>
+          <button id="skip-forward-btn" class="btn-skip" data-i18n-title="skipForward" title="前進">&#x23E9;</button>
+          <span class="skip-label" id="skip-forward-label">+5s</span>
+          <select id="skip-duration" class="select-skip">
+            <option value="1">1s</option>
+            <option value="3">3s</option>
+            <option value="5" selected>5s</option>
+            <option value="10">10s</option>
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+            <option value="60">60s</option>
+          </select>
         </div>
       </section>
 
@@ -75,7 +90,7 @@
 
       <section class="speed-section" id="speed-section" hidden>
         <div class="speed-header">
-          <span data-i18n="speed">?漲</span>
+          <span data-i18n="speed">速度</span>
           <span class="speed-value" id="speed-value">1.00x</span>
         </div>
         <div class="speed-presets" id="speed-presets">
@@ -98,23 +113,23 @@
 
       <section class="bookmark-section" id="bookmark-section" hidden>
         <div class="bookmark-header">
-          <h2 data-i18n="bookmarks">璅?暺?/h2>
+          <h2 data-i18n="bookmarks">標記點</h2>
           <div class="bookmark-actions">
-            <button id="add-bookmark-btn" class="btn-mark" data-i18n="mark">&#x1F516; 璅?</button>
-            <button id="export-bookmarks-btn" class="btn-bm-action" data-i18n-title="exportBookmarks" title="?臬">&#x1F4E4;</button>
-            <label for="import-bookmarks-input" class="btn-bm-action" data-i18n-title="importBookmarks" title="?臬">&#x1F4E5;</label>
+            <button id="add-bookmark-btn" class="btn-mark" data-i18n="mark">&#x1F516; 標記</button>
+            <button id="export-bookmarks-btn" class="btn-bm-action" data-i18n-title="exportBookmarks" title="匯出">&#x1F4E4;</button>
+            <label for="import-bookmarks-input" class="btn-bm-action" data-i18n-title="importBookmarks" title="匯入">&#x1F4E5;</label>
             <input type="file" id="import-bookmarks-input" accept=".json" hidden>
-            <button id="delete-bookmarks-btn" class="btn-bm-action btn-bm-delete" data-i18n-title="deleteBookmarks" title="?芷?券">&#x1F5D1;</button>
+            <button id="delete-bookmarks-btn" class="btn-bm-action btn-bm-delete" data-i18n-title="deleteBookmarks" title="刪除全部">&#x1F5D1;</button>
           </div>
         </div>
         <div class="bookmark-list" id="bookmark-list">
-          <div class="bookmark-empty" data-i18n="noBookmarks">撠璅?暺?/div>
+          <div class="bookmark-empty" data-i18n="noBookmarks">尚無標記點</div>
         </div>
       </section>
 
       <section class="convert-section" id="convert-section" hidden>
         <details class="convert-details">
-          <summary data-i18n="convert">?澆?頧?</summary>
+          <summary data-i18n="convert">格式轉換</summary>
           <div class="convert-content">
             <div class="convert-status" id="convert-status"></div>
             <div class="convert-controls">
@@ -122,7 +137,7 @@
                 <option value="mp3">MP3</option>
                 <option value="wav">WAV</option>
               </select>
-              <button id="convert-btn" class="btn-convert" data-i18n="convertBtn">??頧?</button>
+              <button id="convert-btn" class="btn-convert" data-i18n="convertBtn">開始轉換</button>
             </div>
             <div class="convert-progress" id="convert-progress" hidden>
               <div class="convert-bar">
@@ -131,7 +146,7 @@
               <span class="convert-percent" id="convert-percent">0%</span>
             </div>
             <div class="convert-download" id="convert-download" hidden>
-              <a id="download-link" class="btn-download" data-i18n="download">銝?</a>
+              <a id="download-link" class="btn-download" data-i18n="download">下載</a>
             </div>
           </div>
         </details>
@@ -139,28 +154,30 @@
     </main>
 
     <footer class="footer">
-      <button id="help-btn" class="btn-footer" data-i18n="help">隤芣?</button>
+      <button id="help-btn" class="btn-footer" data-i18n="help">說明</button>
     </footer>
   </div>
 
   <div class="modal-overlay" id="help-modal" hidden>
     <div class="modal">
       <div class="modal-header">
-        <h2 data-i18n="keyboardShortcuts">?萇敹急??/h2>
+        <h2 data-i18n="keyboardShortcuts">鍵盤快捷鍵</h2>
         <button class="btn-close" id="close-help" data-i18n="close">&times;</button>
       </div>
       <div class="modal-body">
         <ul class="shortcut-list">
-          <li><kbd>Space</kbd> <span data-i18n="spacePlayPause">蝛箇?蛛??剜/?怠?</span></li>
-          <li><kbd>&larr;</kbd><kbd>&rarr;</kbd> <span data-i18n="arrowSpeed">撌血?孵??蛛?隤踵?漲</span></li>
-          <li><kbd>M</kbd> <span data-i18n="mBookmark">M ?蛛??啣?璅?</span></li>
-          <li><kbd>1</kbd>-<kbd>9</kbd> <span data-i18n="numberJump">?詨???1-9嚗歲?喳???閮?/span></li>
+          <li><kbd>Space</kbd> <span data-i18n="spacePlayPause">空白鍵：播放/暫停</span></li>
+          <li><kbd>&larr;</kbd><kbd>&rarr;</kbd> <span data-i18n="arrowSpeed">左右方向鍵：調整速度</span></li>
+          <li><kbd>M</kbd> <span data-i18n="mBookmark">M 鍵：新增標記</span></li>
+          <li><kbd>1</kbd>-<kbd>9</kbd> <span data-i18n="numberJump">數字鍵 1-9：跳至對應標記</span></li>
         </ul>
       </div>
     </div>
   </div>
 
   <div class="toast-container" id="toast-container"></div>
+
+  <button id="floating-mark-btn" class="floating-mark-btn" data-i18n-title="mark" aria-label="Add bookmark" hidden>&#x1F516;</button>
 
   <audio id="audio" preload="auto"></audio>
 
@@ -176,4 +193,3 @@
   </script>
 </body>
 </html>
-

@@ -223,7 +223,9 @@ const I18N = {
     importSuccess: '匯入成功',
     importError: '無效的標記檔案',
     confirmDeleteAll: '確定要刪除所有標記點嗎？',
-    deleted: '已刪除'
+    deleted: '已刪除',
+    skipBack: '後退',
+    skipForward: '前進'
   },
   'en': {
     appName: 'SpeedUp',
@@ -449,7 +451,9 @@ const I18N = {
     importSuccess: 'Imported',
     importError: 'Invalid bookmark file',
     confirmDeleteAll: 'Delete all bookmarks?',
-    deleted: 'Deleted'
+    deleted: 'Deleted',
+    skipBack: 'Skip back',
+    skipForward: 'Skip forward'
   }
 };
 
