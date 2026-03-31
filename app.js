@@ -204,6 +204,7 @@
 
     loadBookmarksForFile(file.name);
     addHistoryEntry(file.name, audio.duration || 0);
+    cacheAudioFile(file);
   }
 
   function onMetadataLoaded() {
@@ -538,17 +539,7 @@
         const idx = parseInt(el.dataset.index);
         const item = history[idx];
         if (!item) return;
-        els.fileInput.click();
-        els.fileInput.onchange = (ev) => {
-          const file = ev.target.files[0];
-          if (file && file.name === item.name) {
-            loadFile(file);
-          } else if (file) {
-            addHistoryEntry(file.name, 0);
-            loadFile(file);
-          }
-          els.fileInput.onchange = null;
-        };
+        loadFromCache(item.name);
       });
     });
 
@@ -670,6 +661,85 @@
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });
+  }
+
+  function openAudioDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('speedup-audio', 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains('audio-files')) {
+          db.createObjectStore('audio-files', { keyPath: 'name' });
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function cacheAudioFile(file) {
+    try {
+      const db = await openAudioDB();
+      const tx = db.transaction('audio-files', 'readwrite');
+      const store = tx.objectStore('audio-files');
+      const arrayBuffer = await file.arrayBuffer();
+      store.put({
+        name: file.name,
+        type: file.type,
+        data: Array.from(new Uint8Array(arrayBuffer)),
+        cachedAt: Date.now()
+      });
+      await tx.complete;
+      const all = await store.getAll();
+      if (all.length > 5) {
+        all.sort((a, b) => a.cachedAt - b.cachedAt);
+        const toRemove = all.slice(0, all.length - 5);
+        const tx2 = db.transaction('audio-files', 'readwrite');
+        toRemove.forEach((item) => tx2.objectStore('audio-files').delete(item.name));
+        await tx2.complete;
+      }
+    } catch (e) {
+      console.warn('Failed to cache audio file:', e);
+    }
+  }
+
+  async function loadFromCache(fileName) {
+    try {
+      const db = await openAudioDB();
+      const tx = db.transaction('audio-files', 'readonly');
+      const store = tx.objectStore('audio-files');
+      const request = store.get(fileName);
+
+      request.onsuccess = () => {
+        const cached = request.result;
+        if (cached) {
+          const uint8 = new Uint8Array(cached.data);
+          const blob = new Blob([uint8], { type: cached.type });
+          const file = new File([blob], cached.name, { type: cached.type });
+          loadFile(file);
+          showToast(cached.name, 'success');
+          return;
+        }
+        loadFromPicker(fileName);
+      };
+
+      request.onerror = () => {
+        loadFromPicker(fileName);
+      };
+    } catch (e) {
+      loadFromPicker(fileName);
+    }
+  }
+
+  function loadFromPicker(fileName) {
+    els.fileInput.click();
+    els.fileInput.onchange = (ev) => {
+      const file = ev.target.files[0];
+      if (file) {
+        loadFile(file);
+      }
+      els.fileInput.onchange = null;
+    };
   }
 
   async function checkSharedFile() {
