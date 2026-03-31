@@ -1,13 +1,13 @@
-const CACHE_NAME = 'speedup-v7';
+const CACHE_NAME = 'speedup-v8';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/converter.js',
-  '/i18n.js',
-  '/manifest.json',
-  '/lib/lame.min.js'
+  './',
+  './index.html',
+  './style.css',
+  './app.js',
+  './converter.js',
+  './i18n.js',
+  './manifest.json',
+  './lib/lame.min.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -50,7 +50,7 @@ self.addEventListener('fetch', (event) => {
         } catch (e) {
           console.warn('Share target error:', e);
         }
-        return Response.redirect(self.location.origin + '/', 303);
+        return Response.redirect(self.location.origin + self.location.pathname, 303);
       })()
     );
     return;
@@ -67,7 +67,7 @@ self.addEventListener('fetch', (event) => {
         return response;
       }).catch(() => {
         if (event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('/index.html');
+          return caches.match('./index.html');
         }
       });
     })

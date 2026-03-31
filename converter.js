@@ -34,7 +34,7 @@
   async function loadLibs() {
     if (libsLoaded) return;
     if (libsLoaded) return;
-    await loadScript('/lib/lame.min.js');
+    await loadScript('./lib/lame.min.js');
     libsLoaded = true;
     lameLoaded = true;
   }
