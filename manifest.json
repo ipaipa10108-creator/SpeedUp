@@ -1,0 +1,62 @@
+{
+  "name": "SpeedUp",
+  "short_name": "SpeedUp",
+  "description": "Lightweight audio speed controller with bookmarks",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#16213e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "utilities"],
+  "lang": "zh-TW",
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "audio",
+          "accept": [
+            "audio/aac",
+            "audio/mpeg",
+            "audio/mp4",
+            "audio/wav",
+            "audio/ogg",
+            "audio/flac",
+            "audio/webm",
+            "audio/x-m4a",
+            "audio/x-ms-wma",
+            "audio/opus",
+            "video/mp4",
+            "video/webm",
+            ".aac",
+            ".mp3",
+            ".mp4",
+            ".wav",
+            ".ogg",
+            ".flac",
+            ".webm",
+            ".m4a",
+            ".wma",
+            ".opus"
+          ]
+        }
+      ]
+    }
+  }
+}

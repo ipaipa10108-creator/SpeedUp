@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#16213e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Lightweight audio speed controller with bookmarks">
+  <title>SpeedUp</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x23F1;</text></svg>">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <h1 class="header-title" data-i18n="appName">SpeedUp</h1>
+      <div class="header-actions">
+        <button id="lang-toggle" class="btn-icon" data-i18n-title="lang" aria-label="Toggle language">EN</button>
+        <label for="file-input" class="btn-icon" data-i18n-title="openFile" aria-label="Open file">&#x1F4C2;</label>
+        <input type="file" id="file-input" accept=".aac,.mp3,.mp4,.wav,.ogg,.flac,.webm,.m4a,.wma,.opus,audio/*,video/mp4,video/webm" hidden>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="file-info" id="file-info">
+        <div class="file-name" id="file-name" data-i18n="noFile">尚未選擇音檔</div>
+        <div class="file-status" id="file-status" data-i18n="ready">就緒</div>
+      </section>
+
+      <section class="drop-zone" id="drop-zone">
+        <div class="drop-zone-toggle">
+          <label class="toggle-switch">
+            <input type="checkbox" id="drop-zone-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label" data-i18n="dropZone">拖放區域</span>
+        </div>
+        <div class="drop-zone-content" id="drop-zone-content">
+          <div class="drop-message" data-i18n="dropFile">拖放音檔至此，或點擊上方按鈕選擇檔案</div>
+          <div class="supported-formats" data-i18n="supportedFormats">支援格式：AAC, MP3, MP4, WAV, OGG, FLAC, WEBM, M4A</div>
+        </div>
+      </section>
+
+      <section class="progress-section" id="progress-section" hidden>
+        <div class="time-display">
+          <span id="current-time">0:00</span>
+          <span id="total-time">0:00</span>
+          <span id="remaining-time" class="remaining-time"></span>
+        </div>
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+          <div class="progress-thumb" id="progress-thumb"></div>
+        </div>
+        <div class="time-input-row">
+          <span class="time-input-label" data-i18n="seekTo">跳到</span>
+          <div class="time-input-group">
+            <input type="number" id="input-min" class="time-input" min="0" max="999" value="0" placeholder="分">
+            <span class="time-input-sep">:</span>
+            <input type="number" id="input-sec" class="time-input" min="0" max="59" value="0" placeholder="秒">
+            <span class="time-input-sep">.</span>
+            <input type="number" id="input-ms" class="time-input" min="0" max="9" value="0" placeholder="0.1s">
+            <button id="time-go-btn" class="btn-time-go" data-i18n="go">前往</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls" id="controls" hidden>
+        <button id="play-btn" class="btn-control" data-i18n-title="play" aria-label="Play">&#x25B6;</button>
+        <button id="stop-btn" class="btn-control" data-i18n-title="stop" aria-label="Stop">&#x23F9;</button>
+      </section>
+
+      <section class="speed-section" id="speed-section" hidden>
+        <div class="speed-header">
+          <span data-i18n="speed">速度</span>
+          <span class="speed-value" id="speed-value">1.00x</span>
+        </div>
+        <div class="speed-presets" id="speed-presets">
+          <button class="btn-speed" data-speed="0.25">0.25x</button>
+          <button class="btn-speed" data-speed="0.5">0.5x</button>
+          <button class="btn-speed" data-speed="0.75">0.75x</button>
+          <button class="btn-speed active" data-speed="1">1x</button>
+          <button class="btn-speed" data-speed="1.25">1.25x</button>
+          <button class="btn-speed" data-speed="1.5">1.5x</button>
+          <button class="btn-speed" data-speed="2">2x</button>
+          <button class="btn-speed" data-speed="3">3x</button>
+          <button class="btn-speed" data-speed="4">4x</button>
+        </div>
+        <div class="speed-slider-wrap">
+          <span class="speed-slider-label">0.25x</span>
+          <input type="range" id="speed-slider" class="speed-slider" min="0.25" max="4" step="0.05" value="1">
+          <span class="speed-slider-label">4x</span>
+        </div>
+      </section>
+
+      <section class="bookmark-section" id="bookmark-section" hidden>
+        <div class="bookmark-header">
+          <h2 data-i18n="bookmarks">標記點</h2>
+          <div class="bookmark-actions">
+            <button id="add-bookmark-btn" class="btn-mark" data-i18n="mark">&#x1F516; 標記</button>
+            <button id="export-bookmarks-btn" class="btn-bm-action" data-i18n-title="exportBookmarks" title="匯出">&#x1F4E4;</button>
+            <label for="import-bookmarks-input" class="btn-bm-action" data-i18n-title="importBookmarks" title="匯入">&#x1F4E5;</label>
+            <input type="file" id="import-bookmarks-input" accept=".json" hidden>
+            <button id="delete-bookmarks-btn" class="btn-bm-action btn-bm-delete" data-i18n-title="deleteBookmarks" title="刪除全部">&#x1F5D1;</button>
+          </div>
+        </div>
+        <div class="bookmark-list" id="bookmark-list">
+          <div class="bookmark-empty" data-i18n="noBookmarks">尚無標記點</div>
+        </div>
+      </section>
+
+      <section class="convert-section" id="convert-section" hidden>
+        <details class="convert-details">
+          <summary data-i18n="convert">格式轉換</summary>
+          <div class="convert-content">
+            <div class="convert-status" id="convert-status"></div>
+            <div class="convert-controls">
+              <select id="convert-format" class="select-format">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+              </select>
+              <button id="convert-btn" class="btn-convert" data-i18n="convertBtn">開始轉換</button>
+            </div>
+            <div class="convert-progress" id="convert-progress" hidden>
+              <div class="convert-bar">
+                <div class="convert-fill" id="convert-fill"></div>
+              </div>
+              <span class="convert-percent" id="convert-percent">0%</span>
+            </div>
+            <div class="convert-download" id="convert-download" hidden>
+              <a id="download-link" class="btn-download" data-i18n="download">下載</a>
+            </div>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <button id="help-btn" class="btn-footer" data-i18n="help">說明</button>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="help-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h2 data-i18n="keyboardShortcuts">鍵盤快捷鍵</h2>
+        <button class="btn-close" id="close-help" data-i18n="close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul class="shortcut-list">
+          <li><kbd>Space</kbd> <span data-i18n="spacePlayPause">空白鍵：播放/暫停</span></li>
+          <li><kbd>&larr;</kbd><kbd>&rarr;</kbd> <span data-i18n="arrowSpeed">左右方向鍵：調整速度</span></li>
+          <li><kbd>M</kbd> <span data-i18n="mBookmark">M 鍵：新增標記</span></li>
+          <li><kbd>1</kbd>-<kbd>9</kbd> <span data-i18n="numberJump">數字鍵 1-9：跳至對應標記</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <audio id="audio" preload="auto"></audio>
+
+  <script src="i18n.js"></script>
+  <script src="converter.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
