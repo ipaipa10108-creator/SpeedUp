@@ -177,7 +177,7 @@
     }
   }
 
-  function loadFile(file) {
+  async function loadFile(file) {
     const ext = file.name.split('.').pop().toLowerCase();
     if (!EXTENSION_MAP[ext]) {
       showToast(t('unsupportedFormat'), 'error');
@@ -187,6 +187,8 @@
     if (currentFileURL) {
       URL.revokeObjectURL(currentFileURL);
     }
+
+    const arrayBuffer = await file.arrayBuffer();
 
     currentFile = file;
     currentFileURL = URL.createObjectURL(file);
@@ -204,7 +206,7 @@
 
     loadBookmarksForFile(file.name);
     addHistoryEntry(file.name, audio.duration || 0);
-    cacheAudioFile(file);
+    cacheAudioFileFromArrayBuffer(file, arrayBuffer);
   }
 
   function onMetadataLoaded() {
@@ -685,7 +687,7 @@
     });
   }
 
-  async function cacheAudioFile(file) {
+  async function cacheAudioFileFromArrayBuffer(file, arrayBuffer) {
     try {
       const db = await openAudioDB();
       const tx = db.transaction('audio-files', 'readwrite');
@@ -695,7 +697,6 @@
         r.onsuccess = () => res(r.result);
         r.onerror = () => rej(r.error);
       });
-      const arrayBuffer = await file.arrayBuffer();
       store.put({
         name: file.name,
         type: file.type,
