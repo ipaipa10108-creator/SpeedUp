@@ -1,4 +1,4 @@
-const CACHE_NAME = 'speedup-v6';
+const CACHE_NAME = 'speedup-v7';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -27,26 +27,29 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.endsWith('/share') && event.request.method === 'POST') {
+  if (event.request.method === 'POST') {
     event.respondWith(
       (async () => {
-        const formData = await event.request.formData();
-        const files = formData.getAll('audio');
+        try {
+          const formData = await event.request.formData();
+          const files = formData.getAll('audio') || formData.getAll('file') || formData.getAll('files');
 
-        if (files && files.length > 0) {
-          const file = files[0];
-          const arrayBuffer = await file.arrayBuffer();
-          const db = await openShareDB();
-          const tx = db.transaction('shared-files', 'readwrite');
-          const store = tx.objectStore('shared-files');
-          await store.put({
-            name: file.name,
-            type: file.type,
-            data: Array.from(new Uint8Array(arrayBuffer)),
-            timestamp: Date.now()
-          });
+          if (files && files.length > 0) {
+            const file = files[0];
+            const arrayBuffer = await file.arrayBuffer();
+            const db = await openShareDB();
+            const tx = db.transaction('shared-files', 'readwrite');
+            const store = tx.objectStore('shared-files');
+            await store.put({
+              name: file.name,
+              type: file.type,
+              data: Array.from(new Uint8Array(arrayBuffer)),
+              timestamp: Date.now()
+            });
+          }
+        } catch (e) {
+          console.warn('Share target error:', e);
         }
-
         return Response.redirect(self.location.origin + '/', 303);
       })()
     );

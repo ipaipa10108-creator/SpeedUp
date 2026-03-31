@@ -24,7 +24,7 @@
   "categories": ["music", "utilities"],
   "lang": "zh-TW",
   "share_target": {
-    "action": "/share",
+    "action": "/",
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
